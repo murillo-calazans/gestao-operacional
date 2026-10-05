@@ -62,6 +62,8 @@
             transition: background 0.2s;
         }
         .checkbox-item:hover { background: #f1f5f9; }
+        .xf-link { cursor: pointer; border-radius: 4px; }
+        .xf-link:hover { color: #1d4ed8; text-decoration: underline; text-underline-offset: 3px; }
         .checkbox-item input { width: 16px; height: 16px; cursor: pointer; }
         .podium {
             display: flex;
@@ -390,116 +392,20 @@
             <button id="tabMonthly" class="tab-inactive px-6 py-3 rounded-t-2xl font-black text-sm transition-all flex items-center gap-2"><i data-lucide="calendar-range" class="w-4 h-4"></i> Média Mensal</button>
         </div>
 
-        <section id="globalFiltersPanel" class="bg-white rounded-3xl p-6 shadow-sm border">
-            <div class="flex flex-wrap items-center justify-between gap-4 mb-5">
+        <section id="globalFiltersPanel" class="bg-white rounded-3xl px-6 py-5 shadow-sm border">
+            <div class="flex flex-wrap items-center justify-between gap-4">
                 <h2 class="font-black text-slate-800 text-sm uppercase tracking-widest flex gap-2">
                     <i data-lucide="sliders" class="w-4 h-4 text-amber-600"></i>Filtros Globais
                 </h2>
                 <div class="flex gap-2 flex-wrap">
+                    <button id="btnOpenGlobalFilter" type="button" class="col-span-2 justify-center bg-slate-900 text-white px-4 py-2.5 rounded-xl text-sm font-black action-btn flex items-center gap-2"><i data-lucide="filter" class="w-3 h-3"></i> Filtro Global <span id="globalFilterBadge" class="hidden bg-amber-400 text-slate-900 rounded-full px-2 text-[10px]">0</span></button>
                     <button id="btnFilterInstalacao" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-xs font-black action-btn flex items-center gap-2"><i data-lucide="wrench" class="w-3 h-3"></i> Instalação</button>
                     <button id="btnFilterManutencao" class="bg-orange-600 text-white px-4 py-2 rounded-xl text-xs font-black action-btn flex items-center gap-2"><i data-lucide="settings" class="w-3 h-3"></i> Manutenção</button>
                     <button id="btnClearFilters" class="text-xs font-bold text-slate-400 hover:text-red-600 bg-slate-100 px-4 py-2 rounded-xl"><i data-lucide="rotate-ccw" class="inline w-3 h-3 mr-1"></i>Limpar todos</button>
-                    <button id="btnToggleAdvancedFilters" class="text-xs font-bold text-slate-500 hover:text-slate-900 bg-slate-100 px-4 py-2 rounded-xl"><i data-lucide="sliders-horizontal" class="inline w-3 h-3 mr-1"></i>Filtros avancados</button>
                 </div>
             </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                <div class="relative filter-group">
-                    <label class="text-[10px] font-black text-slate-400 uppercase block mb-1">Setor</label>
-                    <button type="button" onclick="toggleDropdown('setorDrop')" class="filter-btn"><span id="setorLabel" class="truncate">Todos</span><i data-lucide="chevron-down" class="w-4 h-4"></i></button>
-                    <div id="setorDrop" class="dropdown-menu"><div id="setorOptions" class="checkbox-group"></div></div>
-                </div>
-                <div class="relative filter-group">
-                    <label class="text-[10px] font-black text-slate-400 uppercase block mb-1">Assunto</label>
-                    <button type="button" onclick="toggleDropdown('assuntoDrop')" class="filter-btn"><span id="assuntoLabel" class="truncate">Todos</span><i data-lucide="chevron-down" class="w-4 h-4"></i></button>
-                    <div id="assuntoDrop" class="dropdown-menu"><div id="assuntoOptions" class="checkbox-group"></div></div>
-                </div>
-                <div class="relative filter-group advanced-filter hidden">
-                    <label class="text-[10px] font-black text-slate-400 uppercase block mb-1">Cidade</label>
-                    <button type="button" onclick="toggleDropdown('cidadeDrop')" class="filter-btn"><span id="cidadeLabel" class="truncate">Todos</span><i data-lucide="chevron-down" class="w-4 h-4"></i></button>
-                    <div id="cidadeDrop" class="dropdown-menu"><div id="cidadeOptions" class="checkbox-group"></div></div>
-                </div>
-                <div class="relative filter-group advanced-filter hidden">
-                    <label class="text-[10px] font-black text-slate-400 uppercase block mb-1">Bairro</label>
-                    <button type="button" onclick="toggleDropdown('bairroDrop')" class="filter-btn"><span id="bairroLabel" class="truncate">Todos</span><i data-lucide="chevron-down" class="w-4 h-4"></i></button>
-                    <div id="bairroDrop" class="dropdown-menu"><div id="bairroOptions" class="checkbox-group"></div></div>
-                </div>
-                <div class="relative filter-group">
-                    <label class="text-[10px] font-black text-slate-400 uppercase block mb-1">Status</label>
-                    <button type="button" onclick="toggleDropdown('statusDrop')" class="filter-btn"><span id="statusLabel" class="truncate">Todos</span><i data-lucide="chevron-down" class="w-4 h-4"></i></button>
-                    <div id="statusDrop" class="dropdown-menu"><div id="statusOptions" class="checkbox-group"></div></div>
-                </div>
-                <div class="relative filter-group advanced-filter hidden">
-                    <label class="text-[10px] font-black text-slate-400 uppercase block mb-1">Status Conexão</label>
-                    <button type="button" onclick="toggleDropdown('conexaoDrop')" class="filter-btn"><span id="conexaoLabel" class="truncate">Todos</span><i data-lucide="chevron-down" class="w-4 h-4"></i></button>
-                    <div id="conexaoDrop" class="dropdown-menu"><div id="conexaoOptions" class="checkbox-group"></div></div>
-                </div>
-                <div class="relative filter-group">
-                    <label class="text-[10px] font-black text-slate-400 uppercase block mb-1">Diagnóstico</label>
-                    <button type="button" onclick="toggleDropdown('diagnosticoDrop')" class="filter-btn"><span id="diagnosticoLabel" class="truncate">Todos</span><i data-lucide="chevron-down" class="w-4 h-4"></i></button>
-                    <div id="diagnosticoDrop" class="dropdown-menu"><div id="diagnosticoOptions" class="checkbox-group"></div></div>
-                </div>
-                <div class="relative filter-group">
-                    <label class="text-[10px] font-black text-slate-400 uppercase block mb-1">Colaborador</label>
-                    <button type="button" onclick="toggleDropdown('colaboradorDrop')" class="filter-btn"><span id="colaboradorLabel" class="truncate">Todos</span><i data-lucide="chevron-down" class="w-4 h-4"></i></button>
-                    <div id="colaboradorDrop" class="dropdown-menu"><div id="colaboradorOptions" class="checkbox-group"></div></div>
-                </div>
-                <div class="relative filter-group advanced-filter hidden">
-                    <label class="text-[10px] font-black text-slate-400 uppercase block mb-1">Filial</label>
-                    <button type="button" onclick="toggleDropdown('filialDrop')" class="filter-btn"><span id="filialLabel" class="truncate">Todos</span><i data-lucide="chevron-down" class="w-4 h-4"></i></button>
-                    <div id="filialDrop" class="dropdown-menu"><div id="filialOptions" class="checkbox-group"></div></div>
-                </div>
-                <div>
-                    <label class="text-[10px] font-black text-slate-400 uppercase">Campo da data</label>
-                    <select id="dateFilterField" class="w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm">
-                        <option value="abertura">Data de abertura</option>
-                        <option value="fechamento">Data de fechamento</option>
-                        <option value="agendamento">Data de agendamento</option>
-                        <option value="agenda">Agenda consolidada</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="text-[10px] font-black text-slate-400 uppercase">Buscar por</label>
-                    <select id="dateFilterMode" class="w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm">
-                        <option value="day">Dia especifico</option>
-                        <option value="range">Periodo</option>
-                        <option value="month">Mes especifico</option>
-                    </select>
-                </div>
-                <div id="dateFilterSingleWrap">
-                    <label id="dateFilterValueLabel" class="text-[10px] font-black text-slate-400 uppercase">Data</label>
-                    <input type="date" id="dateFilterValue" class="w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm">
-                </div>
-                <div id="dateFilterRangeWrap" class="hidden sm:col-span-2">
-                    <label class="text-[10px] font-black text-slate-400 uppercase">Periodo</label>
-                    <div class="grid grid-cols-2 gap-2">
-                        <input type="date" id="dateFilterStart" class="w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm" aria-label="Data inicial">
-                        <input type="date" id="dateFilterEnd" class="w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm" aria-label="Data final">
-                    </div>
-                </div>
-                <div>
-                    <label class="text-[10px] font-black text-slate-400 uppercase">Aplicar data</label>
-                    <button type="button" id="btnAddDateFilter" class="w-full bg-slate-900 text-white rounded-xl px-3 py-2.5 text-sm font-black action-btn flex items-center justify-center gap-2">
-                        <i data-lucide="search" class="w-4 h-4"></i> Buscar
-                    </button>
-                </div>
-                <div>
-                    <label class="text-[10px] font-black text-slate-400 uppercase">Atalhos</label>
-                    <div class="grid grid-cols-3 gap-2">
-                        <button type="button" id="btnDateToday" class="bg-slate-100 hover:bg-slate-200 rounded-xl px-2 py-2.5 text-xs font-black text-slate-700">Hoje</button>
-                        <button type="button" id="btnDateThisMonth" class="bg-slate-100 hover:bg-slate-200 rounded-xl px-2 py-2.5 text-xs font-black text-slate-700">Este mes</button>
-                        <button type="button" id="btnClearDateFilters" class="bg-rose-50 hover:bg-rose-100 rounded-xl px-2 py-2.5 text-xs font-black text-rose-700">Limpar</button>
-                    </div>
-                </div>
-                <div class="sm:col-span-2 xl:col-span-4">
-                    <div id="selectedDateFilters" class="min-h-[42px] bg-slate-50 border border-dashed rounded-xl px-3 py-2 flex flex-wrap gap-2 items-center text-xs text-slate-400">Nenhuma data selecionada</div>
-                </div>
-                <div class="advanced-filter hidden"><label class="text-[10px] font-black text-slate-400 uppercase">Data Referencia</label><input type="date" id="dateRef" class="w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm"></div>
-                <div class="flex gap-2 advanced-filter hidden">
-                    <div class="w-1/2"><label class="text-[10px] font-black text-slate-400 uppercase">Dias min</label><input type="number" id="minAging" placeholder="0" class="w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm"></div>
-                    <div class="w-1/2"><label class="text-[10px] font-black text-slate-400 uppercase">Dias max</label><input type="number" id="maxAging" placeholder="999" class="w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm"></div>
-                </div>
-            </div>
+            <div id="activeFilterChips" class="mt-4 flex flex-wrap gap-2 items-center text-xs text-slate-400">Nenhum filtro aplicado.</div>
+            <p class="text-[11px] text-slate-400 mt-3">Dica: clique em um nome nos gráficos e tabelas para filtrar a tela inteira. Clique de novo para remover; Ctrl+clique soma mais de um valor.</p>
         </section>
 
         <div id="analyticsContent" class="space-y-8">
@@ -1188,6 +1094,105 @@
         </div>
 
     </main>
+
+    <div id="globalFilterModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[150] flex items-start justify-center p-4 overflow-y-auto" data-modal-backdrop>
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-4xl my-8">
+            <div class="flex items-center justify-between px-6 py-4 border-b">
+                <h2 class="font-black text-slate-800 flex gap-2 items-center"><i data-lucide="filter" class="w-5 h-5 text-amber-600"></i> Filtro Global</h2>
+                <button type="button" class="text-slate-400 hover:text-slate-900 text-2xl leading-none" data-close-modal="globalFilterModal">&times;</button>
+            </div>
+            <div class="p-6 space-y-6">
+                <p class="text-sm text-slate-500">Aplica em todas as abas ao mesmo tempo. Clique em cada campo para abrir a lista com busca e marcar quantas opções quiser; as listas já mostram só o que existe no recorte escolhido nos outros campos. Nada muda na tela até clicar em <b>Aplicar filtro</b>.</p>
+                <div id="globalFilterFields" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+                <div class="border-t pt-5">
+                    <h3 class="text-[11px] font-black text-slate-500 uppercase tracking-widest mb-3">Datas e idade da ordem</h3>
+                    <p class="text-xs text-slate-400 mb-3">As datas entram na hora ao clicar em Buscar ou num atalho.</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div>
+                        <label class="text-[10px] font-black text-slate-400 uppercase">Campo da data</label>
+                        <select id="dateFilterField" class="w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm">
+                            <option value="abertura">Data de abertura</option>
+                            <option value="fechamento">Data de fechamento</option>
+                            <option value="agendamento">Data de agendamento</option>
+                            <option value="agenda">Agenda consolidada</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-black text-slate-400 uppercase">Buscar por</label>
+                        <select id="dateFilterMode" class="w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm">
+                            <option value="day">Dia especifico</option>
+                            <option value="range">Periodo</option>
+                            <option value="month">Mes especifico</option>
+                        </select>
+                    </div>
+                    <div id="dateFilterSingleWrap">
+                        <label id="dateFilterValueLabel" class="text-[10px] font-black text-slate-400 uppercase">Data</label>
+                        <input type="date" id="dateFilterValue" class="w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm">
+                    </div>
+                    <div id="dateFilterRangeWrap" class="hidden sm:col-span-2">
+                        <label class="text-[10px] font-black text-slate-400 uppercase">Periodo</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="date" id="dateFilterStart" class="w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm" aria-label="Data inicial">
+                            <input type="date" id="dateFilterEnd" class="w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm" aria-label="Data final">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-black text-slate-400 uppercase">Aplicar data</label>
+                        <button type="button" id="btnAddDateFilter" class="w-full bg-slate-900 text-white rounded-xl px-3 py-2.5 text-sm font-black action-btn flex items-center justify-center gap-2">
+                            <i data-lucide="search" class="w-4 h-4"></i> Buscar
+                        </button>
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-black text-slate-400 uppercase">Atalhos</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button type="button" id="btnDateToday" class="bg-slate-100 hover:bg-slate-200 rounded-xl px-2 py-2.5 text-xs font-black text-slate-700">Hoje</button>
+                            <button type="button" id="btnDateThisMonth" class="bg-slate-100 hover:bg-slate-200 rounded-xl px-2 py-2.5 text-xs font-black text-slate-700">Este mes</button>
+                            <button type="button" id="btnClearDateFilters" class="bg-rose-50 hover:bg-rose-100 rounded-xl px-2 py-2.5 text-xs font-black text-rose-700">Limpar</button>
+                        </div>
+                    </div>
+                    <div class="sm:col-span-2 lg:col-span-3">
+                        <div id="selectedDateFilters" class="min-h-[42px] bg-slate-50 border border-dashed rounded-xl px-3 py-2 flex flex-wrap gap-2 items-center text-xs text-slate-400">Nenhuma data selecionada</div>
+                    </div>
+                    <div ><label class="text-[10px] font-black text-slate-400 uppercase">Data Referencia</label><input type="date" id="dateRef" class="w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm"></div>
+                    <div class="flex gap-2">
+                        <div class="w-1/2"><label class="text-[10px] font-black text-slate-400 uppercase">Dias min</label><input type="number" id="minAging" placeholder="0" class="w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm"></div>
+                        <div class="w-1/2"><label class="text-[10px] font-black text-slate-400 uppercase">Dias max</label><input type="number" id="maxAging" placeholder="999" class="w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm"></div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-wrap justify-end gap-2 px-6 py-4 border-t bg-slate-50 rounded-b-3xl">
+                <button type="button" id="btnGlobalFilterClear" class="px-5 py-2.5 rounded-xl bg-white border text-slate-700 font-black text-sm hover:bg-slate-100">Limpar filtro</button>
+                <button type="button" id="btnGlobalFilterApply" class="px-5 py-2.5 rounded-xl bg-slate-900 text-white font-black text-sm hover:bg-blue-900">Aplicar filtro</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="filterPickerModal" class="hidden fixed inset-0 bg-slate-900/40 z-[160] flex items-start justify-center p-4 overflow-y-auto" data-modal-backdrop>
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg my-12 flex flex-col max-h-[80vh]">
+            <div class="flex items-center justify-between px-6 py-4 border-b">
+                <h2 id="filterPickerTitle" class="font-black text-slate-800">Campo</h2>
+                <button type="button" class="text-slate-400 hover:text-slate-900 text-2xl leading-none" data-close-modal="filterPickerModal">&times;</button>
+            </div>
+            <div class="px-6 pt-4 space-y-3">
+                <input type="search" id="filterPickerSearch" placeholder="Buscar..." class="w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm">
+                <div class="flex justify-between text-xs font-black">
+                    <button type="button" id="filterPickerSelectAll" class="text-blue-600 hover:underline">Selecionar todos</button>
+                    <span id="filterPickerCount" class="text-slate-400 font-bold"></span>
+                    <button type="button" id="filterPickerClear" class="text-rose-600 hover:underline">Limpar seleção</button>
+                </div>
+            </div>
+            <div id="filterPickerList" class="px-3 py-3 overflow-y-auto flex-1 min-h-[120px]"></div>
+            <div class="flex justify-end px-6 py-4 border-t">
+                <button type="button" class="px-5 py-2.5 rounded-xl bg-slate-900 text-white font-black text-sm hover:bg-blue-900" data-close-modal="filterPickerModal">Concluir</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="floatingFilterPill" class="hidden lg:!hidden fixed bottom-5 right-5 z-[90] bg-slate-900 text-white rounded-full shadow-2xl flex items-center gap-1 pl-4 pr-1 py-1 text-xs font-black">
+        <button type="button" id="floatingFilterOpen" class="flex items-center gap-2 py-1.5"><i data-lucide="filter" class="w-3 h-3 text-amber-300"></i><span id="floatingFilterText">Filtros ativos</span></button>
+        <button type="button" id="floatingFilterClear" title="Limpar todos os filtros" class="ml-1 w-7 h-7 rounded-full bg-white/10 hover:bg-rose-600">&times;</button>
+    </div>
 </div>
 
 <script>
@@ -1197,6 +1202,7 @@
     let filteredData = [];
     let globalSearch = "";
     let activeDateFilters = [];
+    let appliedFilterSelections = {};
     let charts = {};
     let collaboratorRoster = [];
     let collaboratorRosterByName = new Map();
@@ -1860,7 +1866,8 @@
     }
 
     function getSelectedValues(className) {
-        return Array.from(document.querySelectorAll(`.${className}:checked`)).map(cb => cb.value);
+        const filter = DYNAMIC_FILTERS.find(item => item.className === className);
+        return filter ? [...(appliedFilterSelections[filter.key] || [])] : [];
     }
 
     function applyFiltersToData(dataset) {
@@ -2227,8 +2234,8 @@
     }
 
     window.filterByCluster = function(cidade, bairro) {
-        document.querySelectorAll('.cidadeCb').forEach(cb => cb.checked = cb.value === cidade);
-        document.querySelectorAll('.bairroCb').forEach(cb => cb.checked = cb.value === bairro);
+        appliedFilterSelections.cidade = cidade ? [cidade] : [];
+        appliedFilterSelections.bairro = bairro ? [bairro] : [];
         filterAndRender();
     };
 
@@ -2240,11 +2247,11 @@
                     <div class="font-bold">${escapeHtml((d.cliente || '').substring(0, 30))}</div>
                     <div class="text-[11px] text-slate-500 truncate">${escapeHtml((d.endereco || '').substring(0, 50))}</div>
                 </td>
-                <td class="p-4">${escapeHtml(d.cidade || '-')}<br><span class="text-[10px] text-amber-700">${escapeHtml(d.bairro || '-')}</span></td>
+                <td class="p-4">${xfLink('cidade', d.cidade, escapeHtml(d.cidade || '-'))}<br><span class="text-[10px] text-amber-700">${xfLink('bairro', d.bairro, escapeHtml(d.bairro || '-'))}</span></td>
                 <td class="p-4 text-xs">${escapeHtml(d.assunto || '-')}</td>
                 <td class="p-4 text-xs text-slate-500 max-w-[260px] truncate" title="${escapeHtml(d.mensagem || '')}">${escapeHtml((d.mensagem || '').substring(0, 80))}</td>
                 <td class="p-4 text-center font-black ${d.aging > 15 ? 'text-rose-600' : ''}">${d.aging} d</td>
-                <td class="p-4"><span class="bg-slate-100 px-3 py-1 rounded-full text-xs font-bold">${escapeHtml(d.status || '-')}</span></td>
+                <td class="p-4"><span class="bg-slate-100 px-3 py-1 rounded-full text-xs font-bold">${xfLink('status', d.status, escapeHtml(d.status || '-'))}</span></td>
             </tr>`).join('');
 
         if (!filteredData.length) {
@@ -2349,10 +2356,10 @@
                     <div class="font-bold">${escapeHtml(d.cliente || '-')}</div>
                     <div class="text-[11px] text-slate-500">${escapeHtml(d.endereco || '-')}</div>
                 </td>
-                <td class="p-4">${escapeHtml(d.cidade || '-')}<br><span class="text-[10px] text-amber-700">${escapeHtml(d.bairro || '-')}</span></td>
+                <td class="p-4">${xfLink('cidade', d.cidade, escapeHtml(d.cidade || '-'))}<br><span class="text-[10px] text-amber-700">${xfLink('bairro', d.bairro, escapeHtml(d.bairro || '-'))}</span></td>
                 <td class="p-4 text-xs">${escapeHtml(d.assunto || '-')}</td>
                 <td class="p-4 text-xs">${escapeHtml(d.colaborador || 'Não atribuído')}</td>
-                <td class="p-4"><span class="bg-slate-100 px-3 py-1 rounded-full text-xs font-bold">${escapeHtml(d.status || '-')}</span></td>
+                <td class="p-4"><span class="bg-slate-100 px-3 py-1 rounded-full text-xs font-bold">${xfLink('status', d.status, escapeHtml(d.status || '-'))}</span></td>
             </tr>`).join('');
 
         const empty = document.getElementById('agendaEmpty');
@@ -2411,7 +2418,7 @@
         return `${normalizeText(row.cliente || row.endereco || 'SEM CLIENTE')}|${normalizeText(row.assunto || 'SEM ASSUNTO')}`;
     }
 
-    function buildMetricList(items, tone, emptyMessage) {
+    function buildMetricList(items, tone, emptyMessage, filterKey = '') {
         const paletteMap = {
             emerald: { hover: 'hover:bg-emerald-50', badge: 'bg-emerald-100 text-emerald-700', value: 'text-emerald-600' },
             rose: { hover: 'hover:bg-rose-50', badge: 'bg-rose-100 text-rose-700', value: 'text-rose-600' },
@@ -2432,7 +2439,7 @@
                     <div class="flex items-start gap-3 min-w-0">
                         <span class="w-6 h-6 rounded-full ${palette.badge} flex items-center justify-center text-xs font-black shrink-0">${idx + 1}</span>
                         <div class="min-w-0">
-                            <div class="font-medium text-sm truncate" title="${escapeHtml(item.label || '-')}" data-export-full="${escapeHtml(item.label || '-')}">${escapeHtml((item.label || '-').substring(0, 80))}</div>
+                            <div class="font-medium text-sm truncate" title="${escapeHtml(item.label || '-')}" data-export-full="${escapeHtml(item.label || '-')}">${filterKey ? xfLink(filterKey, item.label, escapeHtml((item.label || '-').substring(0, 80))) : escapeHtml((item.label || '-').substring(0, 80))}</div>
                             <div class="text-xs text-slate-500 mt-1">${escapeHtml(item.note || '')}</div>
                         </div>
                     </div>
@@ -2856,18 +2863,18 @@
         const worstSlaList = items => items.filter(item => item.total >= 2).sort((a, b) => a.slaRate - b.slaRate || b.total - a.total).slice(0, 5)
             .map(item => ({ label: item.label, value: safePercent(item.slaOk, item.total, 0), note: `${item.total} OS - Improd. ${safePercent(item.improductive, item.total, 0)} - Ciclo ${formatDuration(item.avgCycle)}` }));
 
-        document.getElementById('slaTechBest').innerHTML = buildMetricList(bestSlaList(techPerformance), 'blue', 'Sem técnicos suficientes para análise de SLA.');
-        document.getElementById('slaTechWorst').innerHTML = buildMetricList(worstSlaList(techPerformance), 'rose', 'Sem técnicos suficientes para análise de SLA.');
-        document.getElementById('slaCityBest').innerHTML = buildMetricList(bestSlaList(cityPerformance), 'blue', 'Sem cidades suficientes para análise de SLA.');
-        document.getElementById('slaCityWorst').innerHTML = buildMetricList(worstSlaList(cityPerformance), 'rose', 'Sem cidades suficientes para análise de SLA.');
-        document.getElementById('slaSubjectBest').innerHTML = buildMetricList(bestSlaList(subjectPerformance), 'blue', 'Sem assuntos suficientes para análise de SLA.');
-        document.getElementById('slaSubjectWorst').innerHTML = buildMetricList(worstSlaList(subjectPerformance), 'rose', 'Sem assuntos suficientes para análise de SLA.');
+        document.getElementById('slaTechBest').innerHTML = buildMetricList(bestSlaList(techPerformance), 'blue', 'Sem técnicos suficientes para análise de SLA.', 'colaborador');
+        document.getElementById('slaTechWorst').innerHTML = buildMetricList(worstSlaList(techPerformance), 'rose', 'Sem técnicos suficientes para análise de SLA.', 'colaborador');
+        document.getElementById('slaCityBest').innerHTML = buildMetricList(bestSlaList(cityPerformance), 'blue', 'Sem cidades suficientes para análise de SLA.', 'cidade');
+        document.getElementById('slaCityWorst').innerHTML = buildMetricList(worstSlaList(cityPerformance), 'rose', 'Sem cidades suficientes para análise de SLA.', 'cidade');
+        document.getElementById('slaSubjectBest').innerHTML = buildMetricList(bestSlaList(subjectPerformance), 'blue', 'Sem assuntos suficientes para análise de SLA.', 'assunto');
+        document.getElementById('slaSubjectWorst').innerHTML = buildMetricList(worstSlaList(subjectPerformance), 'rose', 'Sem assuntos suficientes para análise de SLA.', 'assunto');
 
         const recurrenceList = items => items.filter(item => item.recurring > 0).sort((a, b) => b.recurring - a.recurring || b.total - a.total).slice(0, 5)
             .map(item => ({ label: item.label, value: `${item.recurring}`, note: `Taxa ${safePercent(item.recurring, item.total, 0)} - 1ª visita ${safePercent(item.firstVisit, item.total, 0)}` }));
-        document.getElementById('recurrenceByBairro').innerHTML = buildMetricList(recurrenceList(bairroPerformance), 'amber', 'Sem recorrência por bairro no recorte atual.');
-        document.getElementById('recurrenceByTecnico').innerHTML = buildMetricList(recurrenceList(techPerformance), 'amber', 'Sem recorrência por colaborador no recorte atual.');
-        document.getElementById('recurrenceByAssunto').innerHTML = buildMetricList(recurrenceList(subjectPerformance), 'amber', 'Sem recorrência por assunto no recorte atual.');
+        document.getElementById('recurrenceByBairro').innerHTML = buildMetricList(recurrenceList(bairroPerformance), 'amber', 'Sem recorrência por bairro no recorte atual.', 'bairro');
+        document.getElementById('recurrenceByTecnico').innerHTML = buildMetricList(recurrenceList(techPerformance), 'amber', 'Sem recorrência por colaborador no recorte atual.', 'colaborador');
+        document.getElementById('recurrenceByAssunto').innerHTML = buildMetricList(recurrenceList(subjectPerformance), 'amber', 'Sem recorrência por assunto no recorte atual.', 'assunto');
 
         const prodDiag = aggregateCount(produtivas, row => row.diagnostico || 'Sem diagnóstico').slice(0, 8);
         const imprDiag = aggregateCount(improdutivas, row => row.diagnostico || 'Sem diagnóstico').slice(0, 8);
@@ -3131,7 +3138,7 @@ function renderTechnicians() {
         document.getElementById('techTopProductiveTable').innerHTML = productiveRanking.map((tech, idx) => `
                 <tr class="border-b">
                     <td class="p-4 font-black text-center">${idx + 1}</td>
-                    <td class="p-4 font-bold">${escapeHtml(tech.name)}</td>
+                    <td class="p-4 font-bold">${xfLink('colaborador', tech.name, escapeHtml(tech.name))}</td>
                     <td class="p-4 text-center font-black text-emerald-700">${tech.prod} OS/dia</td>
                     <td class="p-4 text-center font-black text-slate-700">${tech.productive}</td>
                     <td class="p-4 text-center font-black text-blue-700">${tech.productiveDaysWorked}</td>
@@ -3142,7 +3149,7 @@ function renderTechnicians() {
             return `
                 <tr class="border-b">
                     <td class="p-4 font-black text-center">${idx + 1}</td>
-                    <td class="p-4 font-bold">${escapeHtml(tech.name)}</td>
+                    <td class="p-4 font-bold">${xfLink('colaborador', tech.name, escapeHtml(tech.name))}</td>
                     <td class="p-4 text-center font-black text-rose-700">${tech.prod} OS/dia</td>
                     <td class="p-4 text-center font-black text-slate-700">${tech.productive}</td>
                     <td class="p-4 text-center font-black text-blue-700">${tech.productiveDaysWorked || tech.daysWorked}</td>
@@ -3218,7 +3225,7 @@ function renderTechnicians() {
                 const topText = row.top3.map(item => `${escapeHtml(item.bairro)} (${escapeHtml(item.cidade)}): ${item.total} OS`).join('<br>');
                 return `
                     <tr class="border-b align-top">
-                        <td class="p-4 font-bold">${escapeHtml(row.name)}</td>
+                        <td class="p-4 font-bold">${xfLink('colaborador', row.name, escapeHtml(row.name))}</td>
                         <td class="p-4 text-center font-black text-blue-700">${row.total}</td>
                         <td class="p-4 text-center font-black text-slate-700">${row.neighborhoods.length}</td>
                         <td class="p-4">
@@ -3237,7 +3244,7 @@ function renderTechnicians() {
             return `
                 <tr class="${rowClass} border-b">
                     <td class="p-4 font-black text-center">${idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : idx + 1}</td>
-                    <td class="p-4 font-bold">${escapeHtml(tech.name)}<div class="text-[11px] text-slate-500 font-medium mt-1">${tech.daysWorked} dia(s) trabalhado(s) | ${tech.productiveDaysWorked} dia(s) produtivo(s)</div></td>
+                    <td class="p-4 font-bold">${xfLink('colaborador', tech.name, escapeHtml(tech.name))}<div class="text-[11px] text-slate-500 font-medium mt-1">${tech.daysWorked} dia(s) trabalhado(s) | ${tech.productiveDaysWorked} dia(s) produtivo(s)</div></td>
                     <td class="p-4 text-center font-black text-blue-700">${tech.total}</td>
                     <td class="p-4 text-center font-black text-emerald-700">${tech.productive}</td>
                     <td class="p-4 text-center font-black text-rose-700">${tech.improductive}</td>
@@ -3273,7 +3280,8 @@ function renderTechnicians() {
     }
 
     window.toggleAll = function(className, state) {
-        document.querySelectorAll(`.${className}`).forEach(cb => cb.checked = state);
+        const filter = DYNAMIC_FILTERS.find(item => item.className === className);
+        if (filter) appliedFilterSelections[filter.key] = state ? computeFilterOptions(filter.key, appliedFilterSelections) : [];
         filterAndRender();
     };
 
@@ -3316,30 +3324,23 @@ function renderTechnicians() {
         return true;
     }
 
-    function refreshDynamicFilterOptions() {
-        if (!fullData.length) return;
-        const selections = getDynamicSelections();
-        DYNAMIC_FILTERS.forEach(filter => {
-            let values;
-            if (filter.key === 'setor' && collaboratorRoster.length) {
-                const rows = fullData.filter(row => rowMatchesDynamicSelections(row, selections, filter.key));
-                const sectorsWithRows = new Set(rows.map(row => row.colaboradorSetor || row.setor).filter(Boolean));
-                values = collaboratorRoster.map(item => item.sector).filter(Boolean).filter(sector => sectorsWithRows.has(sector) || !(selections[filter.key] || []).length);
-                if (!values.length) values = Array.from(sectorsWithRows);
-            } else if (filter.key === 'colaborador' && collaboratorRoster.length) {
-                const rows = fullData.filter(row => rowMatchesDynamicSelections(row, selections, filter.key));
-                const namesWithRows = new Set(rows.map(row => row.colaboradorCadastro || row.colaborador).filter(Boolean));
-                values = collaboratorRoster.map(item => item.name).filter(Boolean).filter(name => namesWithRows.has(name));
-            } else {
-                values = fullData
-                    .filter(row => rowMatchesDynamicSelections(row, selections, filter.key))
-                    .map(filter.getter)
-                    .filter(Boolean);
-            }
-            values = [...new Set(values)].sort((a, b) => String(a).localeCompare(String(b), 'pt-BR'));
-            const keptSelections = (selections[filter.key] || []).filter(value => values.includes(value));
-            buildCheckboxes(filter.containerId, values, filter.className, keptSelections);
-        });
+    // As opções de cada campo são calculadas na hora em que o seletor do Filtro Global abre
+    // (ver computeFilterOptions), então não há nada para reconstruir a cada renderização.
+    function refreshDynamicFilterOptions() {}
+
+    function computeFilterOptions(key, selections) {
+        const filter = DYNAMIC_FILTERS.find(item => item.key === key);
+        if (!filter || !fullData.length) return [];
+        let values = fullData
+            .filter(row => rowMatchesDynamicSelections(row, selections, key))
+            .map(filter.getter)
+            .filter(Boolean);
+        if (key === 'colaborador' && collaboratorRoster.length) {
+            const namesWithRows = new Set(values);
+            values = collaboratorRoster.map(item => item.name).filter(name => namesWithRows.has(name));
+        }
+        return [...new Set([...values, ...(selections[key] || [])])]
+            .sort((a, b) => String(a).localeCompare(String(b), 'pt-BR'));
     }
 
     function populateAllFilters() {
@@ -3361,7 +3362,7 @@ function renderTechnicians() {
     }
 
     function applyQuickFilter(list) {
-        document.querySelectorAll('.assuntoCb').forEach(cb => cb.checked = list.includes(cb.value));
+        appliedFilterSelections.assunto = [...new Set(fullData.map(d => d.assunto).filter(assunto => assunto && list.includes(assunto)))];
         filterAndRender();
     }
 
@@ -3481,7 +3482,7 @@ function renderTechnicians() {
     }, 220));
 
     document.getElementById('btnClearFilters').addEventListener('click', () => {
-        document.querySelectorAll('.filter-check').forEach(cb => cb.checked = false);
+        appliedFilterSelections = {};
         ['minAging', 'maxAging'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.value = '';
@@ -3977,15 +3978,7 @@ function renderTechnicians() {
         refreshDynamicFilterOptions();
         filteredData = applyFiltersToData(fullData);
 
-        updateFilterLabel('setorLabel', 'setorCb');
-        updateFilterLabel('assuntoLabel', 'assuntoCb');
-        updateFilterLabel('cidadeLabel', 'cidadeCb');
-        updateFilterLabel('bairroLabel', 'bairroCb');
-        updateFilterLabel('statusLabel', 'statusCb');
-        updateFilterLabel('conexaoLabel', 'conexaoCb');
-        updateFilterLabel('diagnosticoLabel', 'diagnosticoCb');
-        updateFilterLabel('colaboradorLabel', 'colaboradorCb');
-        updateFilterLabel('filialLabel', 'filialCb');
+        renderGlobalFilterSummary();
 
         updateKPIs();
         renderCharts();
@@ -4013,14 +4006,14 @@ function renderTechnicians() {
                     <div class="text-[11px] text-slate-500 truncate">${escapeHtml((d.endereco || '').substring(0, 60))}</div>
                     <div class="text-[10px] text-slate-400 mt-1">${escapeHtml(d.protocolo || d.osId || d.contrato || '')}</div>
                 </td>
-                <td class="p-4">${escapeHtml(d.cidade || '-')}<br><span class="text-[10px] text-amber-700">${escapeHtml(d.bairro || '-')}</span></td>
+                <td class="p-4">${xfLink('cidade', d.cidade, escapeHtml(d.cidade || '-'))}<br><span class="text-[10px] text-amber-700">${xfLink('bairro', d.bairro, escapeHtml(d.bairro || '-'))}</span></td>
                 <td class="p-4 text-xs">
-                    <div>${escapeHtml(d.assunto || '-')}</div>
+                    <div>${xfLink('assunto', d.assunto, escapeHtml(d.assunto || '-'))}</div>
                     <div class="text-[10px] text-slate-400 mt-1">${escapeHtml(d.segmentoPrincipal || '-')} - ${escapeHtml(d.natureza || '-')}</div>
                 </td>
                 <td class="p-4 text-xs text-slate-500 max-w-[260px] truncate" title="${escapeHtml(d.mensagem || d.diagnostico || '')}">${escapeHtml((d.mensagem || d.diagnostico || '').substring(0, 90))}</td>
                 <td class="p-4 text-center font-black ${d.aging > 15 ? 'text-rose-600' : ''}">${d.aging} d</td>
-                <td class="p-4"><span class="bg-slate-100 px-3 py-1 rounded-full text-xs font-bold">${escapeHtml(d.status || '-')}</span></td>
+                <td class="p-4"><span class="bg-slate-100 px-3 py-1 rounded-full text-xs font-bold">${xfLink('status', d.status, escapeHtml(d.status || '-'))}</span></td>
             </tr>`).join('') : `<tr><td colspan="6" class="p-8 text-center text-slate-500">Nenhum registro encontrado com os filtros aplicados.</td></tr>`;
 
         const info = document.getElementById('mainTableInfo');
@@ -4363,6 +4356,316 @@ function renderTechnicians() {
     });
 
     updateSegmentButtons();
+
+    // ===== Filtro Global em popup (igual ao COP Analytics) + filtro cruzado estilo BI =====
+    // O estado aplicado fica em appliedFilterSelections ({ setor: [...], assunto: [...], ... });
+    // o popup edita uma cópia (pendingFilterSelections) que só vale ao clicar em "Aplicar filtro".
+    const FILTER_FIELD_LABELS = {
+        setor: 'Setor', assunto: 'Assunto', cidade: 'Cidade', bairro: 'Bairro', status: 'Status',
+        conexao: 'Status Conexão', diagnostico: 'Diagnóstico', colaborador: 'Colaborador', filial: 'Filial'
+    };
+    // Gráficos que filtram a tela ao clicar numa barra/fatia (id do canvas -> campo do filtro).
+    const CHART_CROSS_FILTERS = {
+        subjectsChart: 'assunto', techSubjectsChart: 'assunto',
+        agingStatusChart: 'status',
+        agendaCityChart: 'cidade',
+        diagnosticosChart: 'diagnostico', paretoProdChart: 'diagnostico', paretoImprodChart: 'diagnostico',
+        techBarChart: 'colaborador', techProdImpChart: 'colaborador'
+    };
+    let pendingFilterSelections = {};
+    let activePickerKey = null;
+    let activePickerOptions = [];
+
+    function cloneFilterSelections(source) {
+        const copy = {};
+        DYNAMIC_FILTERS.forEach(filter => copy[filter.key] = [...((source || {})[filter.key] || [])]);
+        return copy;
+    }
+
+    function xfLink(key, value, innerHtml) {
+        if (!value) return innerHtml;
+        return `<span class="xf-link" data-xf-key="${key}" data-xf-value="${escapeHtml(value)}" title="Clique para filtrar por ${escapeHtml(FILTER_FIELD_LABELS[key] || key)}">${innerHtml}</span>`;
+    }
+
+    function showFilterModal(id) {
+        document.getElementById(id)?.classList.remove('hidden');
+        if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+    }
+
+    function hideFilterModal(id) {
+        const modal = document.getElementById(id);
+        if (!modal || modal.classList.contains('hidden')) return;
+        modal.classList.add('hidden');
+        if (id === 'filterPickerModal') {
+            activePickerKey = null;
+            renderGlobalFilterFields();
+        }
+    }
+
+    function openGlobalFilterModal() {
+        if (!fullData.length) {
+            alert('Importe a planilha de ordens antes de filtrar.');
+            return;
+        }
+        pendingFilterSelections = cloneFilterSelections(appliedFilterSelections);
+        renderGlobalFilterFields();
+        renderGlobalDateFilters();
+        showFilterModal('globalFilterModal');
+    }
+
+    function renderGlobalFilterFields() {
+        const container = document.getElementById('globalFilterFields');
+        if (!container) return;
+        container.innerHTML = DYNAMIC_FILTERS.map(filter => {
+            const selected = pendingFilterSelections[filter.key] || [];
+            const summary = !selected.length ? 'Todos' : (selected.length === 1 ? selected[0] : `${selected.length} selecionados`);
+            return `
+                <div>
+                    <label class="text-[10px] font-black text-slate-400 uppercase block mb-1">${escapeHtml(FILTER_FIELD_LABELS[filter.key] || filter.key)}</label>
+                    <button type="button" data-picker-key="${filter.key}" class="filter-btn ${selected.length ? 'ring-2 ring-amber-400 bg-amber-50' : ''}">
+                        <span class="truncate">${escapeHtml(summary)}</span><i data-lucide="chevron-down" class="w-4 h-4"></i>
+                    </button>
+                </div>`;
+        }).join('');
+        if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+    }
+
+    function openFilterPicker(key) {
+        activePickerKey = key;
+        activePickerOptions = computeFilterOptions(key, pendingFilterSelections);
+        document.getElementById('filterPickerTitle').innerText = FILTER_FIELD_LABELS[key] || key;
+        const search = document.getElementById('filterPickerSearch');
+        search.value = '';
+        renderFilterPickerList();
+        showFilterModal('filterPickerModal');
+        search.focus();
+    }
+
+    function visiblePickerOptions() {
+        const term = normalizeText(document.getElementById('filterPickerSearch')?.value || '');
+        return term ? activePickerOptions.filter(value => normalizeText(value).includes(term)) : activePickerOptions;
+    }
+
+    function updateFilterPickerCount() {
+        const countEl = document.getElementById('filterPickerCount');
+        if (countEl) countEl.innerText = `${(pendingFilterSelections[activePickerKey] || []).length} marcado(s) de ${activePickerOptions.length}`;
+    }
+
+    function renderFilterPickerList() {
+        const list = document.getElementById('filterPickerList');
+        if (!list || !activePickerKey) return;
+        const selected = new Set(pendingFilterSelections[activePickerKey] || []);
+        const options = visiblePickerOptions();
+        list.innerHTML = options.length
+            ? options.map(value => `<label class="checkbox-item ${selected.has(value) ? 'bg-amber-50' : ''}"><input type="checkbox" data-value="${escapeHtml(value)}"${selected.has(value) ? ' checked' : ''}><span>${escapeHtml(value)}</span></label>`).join('')
+            : `<p class="p-4 text-sm text-slate-500">${activePickerOptions.length ? 'Nenhuma opção bate com essa busca.' : 'Nenhuma opção para o recorte atual.'}</p>`;
+        updateFilterPickerCount();
+    }
+
+    function togglePendingFilterValue(value, checked) {
+        const current = pendingFilterSelections[activePickerKey] || [];
+        pendingFilterSelections[activePickerKey] = checked
+            ? [...new Set([...current, value])]
+            : current.filter(item => item !== value);
+        updateFilterPickerCount();
+    }
+
+    function applyGlobalFilterModal() {
+        appliedFilterSelections = cloneFilterSelections(pendingFilterSelections);
+        hideFilterModal('filterPickerModal');
+        hideFilterModal('globalFilterModal');
+        filterAndRender();
+    }
+
+    function getAgingFilterLabel() {
+        const min = document.getElementById('minAging')?.value;
+        const max = document.getElementById('maxAging')?.value;
+        if (!min && !max) return '';
+        if (min && max) return `${min} a ${max} dias`;
+        return min ? `${min}+ dias` : `até ${max} dias`;
+    }
+
+    function countActiveGlobalFilters() {
+        let total = DYNAMIC_FILTERS.filter(filter => (appliedFilterSelections[filter.key] || []).length).length;
+        total += activeDateFilters.length;
+        if (getAgingFilterLabel()) total++;
+        if (window.currentSegmentFilter && window.currentSegmentFilter !== 'todos') total++;
+        if (globalSearch) total++;
+        return total;
+    }
+
+    function filterChipHtml(text, removeAttrs, title = '') {
+        return `<span class="inline-flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-900 rounded-full pl-3 pr-1 py-1 font-bold max-w-full" title="${escapeHtml(title || text)}">
+            <span class="truncate max-w-[320px]">${escapeHtml(text)}</span>
+            <button type="button" ${removeAttrs} class="w-5 h-5 rounded-full text-amber-700 hover:bg-rose-600 hover:text-white font-black leading-none">&times;</button>
+        </span>`;
+    }
+
+    function renderGlobalFilterSummary() {
+        const chips = [];
+        DYNAMIC_FILTERS.forEach(filter => {
+            const selected = appliedFilterSelections[filter.key] || [];
+            const label = FILTER_FIELD_LABELS[filter.key] || filter.key;
+            if (!selected.length) return;
+            if (selected.length <= 3) {
+                selected.forEach(value => chips.push(filterChipHtml(`${label}: ${value}`, `data-chip-key="${filter.key}" data-chip-value="${escapeHtml(value)}"`)));
+            } else {
+                chips.push(filterChipHtml(`${label}: ${selected.length} selecionados`, `data-chip-key="${filter.key}"`, selected.join(', ')));
+            }
+        });
+        activeDateFilters.forEach((filter, index) => {
+            chips.push(filterChipHtml(`${getDateFilterFieldLabel(filter.field)}: ${filter.label}`, `data-chip-date="${index}"`));
+        });
+        const agingLabel = getAgingFilterLabel();
+        if (agingLabel) chips.push(filterChipHtml(`Idade: ${agingLabel}`, 'data-chip-aging="1"'));
+        if (window.currentSegmentFilter && window.currentSegmentFilter !== 'todos') {
+            chips.push(filterChipHtml(`Segmento: ${window.currentSegmentFilter}`, 'data-chip-segment="1"'));
+        }
+        if (globalSearch) chips.push(filterChipHtml(`Busca: ${globalSearch}`, 'data-chip-search="1"'));
+
+        const target = document.getElementById('activeFilterChips');
+        if (target) target.innerHTML = chips.length ? chips.join('') : 'Nenhum filtro aplicado.';
+
+        const total = countActiveGlobalFilters();
+        const badge = document.getElementById('globalFilterBadge');
+        if (badge) {
+            badge.innerText = total;
+            badge.classList.toggle('hidden', total === 0);
+        }
+        const pill = document.getElementById('floatingFilterPill');
+        if (pill) {
+            pill.classList.toggle('hidden', total === 0);
+            pill.classList.toggle('flex', total > 0);
+            const activeKeys = DYNAMIC_FILTERS.filter(filter => (appliedFilterSelections[filter.key] || []).length);
+            const only = total === 1 && activeKeys.length === 1 && appliedFilterSelections[activeKeys[0].key].length === 1
+                ? `${FILTER_FIELD_LABELS[activeKeys[0].key]}: ${appliedFilterSelections[activeKeys[0].key][0]}`
+                : `${total} filtro(s) ativo(s)`;
+            const text = document.getElementById('floatingFilterText');
+            if (text) text.innerText = only.length > 48 ? `${only.slice(0, 47)}…` : only;
+        }
+    }
+
+    // Clique estilo BI: clique simples filtra só por aquele valor (clicar de novo remove);
+    // Ctrl/Shift+clique soma (ou tira) o valor no filtro que já existe.
+    function resolveFilterValue(key, rawLabel) {
+        const filter = DYNAMIC_FILTERS.find(item => item.key === key);
+        const label = String(Array.isArray(rawLabel) ? rawLabel.join(' ') : (rawLabel ?? '')).trim();
+        if (!filter || !label || !fullData.length) return null;
+        const values = [...new Set(fullData.map(filter.getter).filter(Boolean))];
+        if (values.includes(label)) return label;
+        const normalized = normalizeText(label).replace(/(\.\.\.|…)$/, '').trim();
+        return values.find(value => normalizeText(value) === normalized)
+            || (normalized.length >= 8 ? values.find(value => normalizeText(value).startsWith(normalized)) : null)
+            || null;
+    }
+
+    function applyCrossFilter(key, rawLabel, additive) {
+        const value = resolveFilterValue(key, rawLabel);
+        if (!value) return;
+        const current = appliedFilterSelections[key] || [];
+        if (additive) {
+            appliedFilterSelections[key] = current.includes(value) ? current.filter(item => item !== value) : [...current, value];
+        } else {
+            appliedFilterSelections[key] = current.length === 1 && current[0] === value ? [] : [value];
+        }
+        filterAndRender();
+    }
+
+    if (typeof Chart !== 'undefined' && Chart.defaults) {
+        const crossFilterElementsAt = (event, elements, chart) => {
+            if (elements && elements.length) return elements;
+            if (!chart || chart.config.type !== 'bar') return [];
+            return chart.getElementsAtEventForMode(event.native || event, 'index', { intersect: false, axis: chart.options.indexAxis === 'y' ? 'y' : 'x' }, false);
+        };
+        Chart.defaults.onClick = (event, elements, chart) => {
+            const key = CHART_CROSS_FILTERS[chart?.canvas?.id];
+            if (!key) return;
+            const hits = crossFilterElementsAt(event, elements, chart);
+            if (!hits.length) return;
+            const native = event.native || event;
+            const label = chart.data.labels?.[hits[0].index];
+            const additive = !!(native.ctrlKey || native.metaKey || native.shiftKey);
+            // Fora do ciclo do evento: filterAndRender destrói e recria este gráfico.
+            setTimeout(() => applyCrossFilter(key, label, additive), 0);
+        };
+        Chart.defaults.onHover = (event, elements, chart) => {
+            if (!CHART_CROSS_FILTERS[chart?.canvas?.id]) return;
+            chart.canvas.style.cursor = crossFilterElementsAt(event, elements, chart).length ? 'pointer' : 'default';
+        };
+    }
+
+    document.addEventListener('click', (event) => {
+        const link = event.target.closest('[data-xf-key]');
+        if (link) {
+            event.preventDefault();
+            applyCrossFilter(link.dataset.xfKey, link.dataset.xfValue, event.ctrlKey || event.metaKey || event.shiftKey);
+            return;
+        }
+        const chipButton = event.target.closest('#activeFilterChips button');
+        if (chipButton) {
+            const { chipKey, chipValue, chipDate } = chipButton.dataset;
+            if (chipKey) {
+                appliedFilterSelections[chipKey] = chipValue === undefined ? [] : (appliedFilterSelections[chipKey] || []).filter(item => item !== chipValue);
+                filterAndRender();
+            } else if (chipDate !== undefined) {
+                removeGlobalDateFilter(Number(chipDate));
+            } else if (chipButton.dataset.chipAging) {
+                ['minAging', 'maxAging'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+                filterAndRender();
+            } else if (chipButton.dataset.chipSegment) {
+                setSegmentFilter('todos');
+            } else if (chipButton.dataset.chipSearch) {
+                globalSearch = '';
+                const search = document.getElementById('tableSearch');
+                if (search) search.value = '';
+                filterAndRender();
+            }
+            return;
+        }
+        const closer = event.target.closest('[data-close-modal]');
+        if (closer) {
+            hideFilterModal(closer.dataset.closeModal);
+            return;
+        }
+        if (event.target.matches('[data-modal-backdrop]')) hideFilterModal(event.target.id);
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key !== 'Escape') return;
+        if (!document.getElementById('filterPickerModal')?.classList.contains('hidden')) hideFilterModal('filterPickerModal');
+        else hideFilterModal('globalFilterModal');
+    });
+
+    document.getElementById('btnOpenGlobalFilter')?.addEventListener('click', openGlobalFilterModal);
+    document.getElementById('floatingFilterOpen')?.addEventListener('click', openGlobalFilterModal);
+    document.getElementById('floatingFilterClear')?.addEventListener('click', () => document.getElementById('btnClearFilters')?.click());
+    document.getElementById('btnGlobalFilterApply')?.addEventListener('click', applyGlobalFilterModal);
+    document.getElementById('btnGlobalFilterClear')?.addEventListener('click', () => {
+        document.getElementById('btnClearFilters')?.click();
+        pendingFilterSelections = cloneFilterSelections({});
+        renderGlobalFilterFields();
+        renderGlobalDateFilters();
+    });
+    document.getElementById('globalFilterFields')?.addEventListener('click', (event) => {
+        const button = event.target.closest('[data-picker-key]');
+        if (button) openFilterPicker(button.dataset.pickerKey);
+    });
+    document.getElementById('filterPickerSearch')?.addEventListener('input', renderFilterPickerList);
+    document.getElementById('filterPickerList')?.addEventListener('change', (event) => {
+        const checkbox = event.target.closest('input[type="checkbox"]');
+        if (!checkbox) return;
+        togglePendingFilterValue(checkbox.dataset.value, checkbox.checked);
+        checkbox.closest('label')?.classList.toggle('bg-amber-50', checkbox.checked);
+    });
+    document.getElementById('filterPickerSelectAll')?.addEventListener('click', () => {
+        pendingFilterSelections[activePickerKey] = [...new Set([...(pendingFilterSelections[activePickerKey] || []), ...visiblePickerOptions()])];
+        renderFilterPickerList();
+    });
+    document.getElementById('filterPickerClear')?.addEventListener('click', () => {
+        pendingFilterSelections[activePickerKey] = [];
+        renderFilterPickerList();
+    });
+    renderGlobalFilterSummary();
 
 </script>
 
