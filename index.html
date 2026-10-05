@@ -406,7 +406,7 @@
                 </div>
             </div>
             <div id="activeFilterChips" class="mt-4 flex flex-wrap gap-2 items-center text-xs text-slate-400">Nenhum filtro aplicado.</div>
-            <p class="text-[11px] text-slate-400 mt-3">Dica: clique em um nome nos gráficos e tabelas para filtrar a tela inteira. Clique de novo para remover. Para escolher vários, segure Ctrl e clique em cada um; o filtro aplica quando você solta o Ctrl.</p>
+            <p class="text-[11px] text-slate-400 mt-3">Dica: clique em um nome nos gráficos e tabelas para filtrar a tela inteira. O gráfico clicado continua com todas as barras e destaca as escolhidas. Clique de novo para remover. Para escolher vários, segure Ctrl e clique em cada um; o filtro aplica quando você solta o Ctrl.</p>
         </section>
 
         <div id="analyticsContent" class="space-y-8">
@@ -4633,6 +4633,82 @@ function renderTechnicians() {
         if (!event.ctrlKey && !event.metaKey && !event.shiftKey) commitPendingCrossFilter();
     });
     window.addEventListener('blur', commitPendingCrossFilter);
+
+    // Realce estilo Power BI: quando um campo com gráfico próprio (assunto, status, diagnóstico,
+    // colaborador, cidade) está filtrado, esse gráfico continua mostrando todos os valores — os
+    // escolhidos com a cor normal e os demais opacos —, enquanto o resto da tela filtra normalmente.
+    // Para isso a tela é renderizada uma vez "por fora" sem o filtro do próprio campo, só para
+    // capturar a configuração desses gráficos (window.Chart vira um stub nessa passada; o DOM que
+    // ela escreve é sobrescrito pela renderização real logo em seguida).
+    let crossHighlightRendering = false;
+    const renderDashboardBase = filterAndRender;
+
+    function captureChartsWithoutOwnFilter(key) {
+        const canvasIds = Object.keys(CHART_CROSS_FILTERS).filter(id => CHART_CROSS_FILTERS[id] === key);
+        const captured = {};
+        const RealChart = window.Chart;
+        const savedSelections = appliedFilterSelections;
+        const savedCharts = charts;
+        const savedFiltered = filteredData;
+        function ChartCapture(canvas, config) {
+            const id = canvas?.id || canvas?.canvas?.id;
+            if (canvasIds.includes(id)) captured[id] = config;
+            this.canvas = canvas;
+            this.data = config?.data || { labels: [], datasets: [] };
+            this.options = config?.options || {};
+        }
+        ['destroy', 'update', 'resize', 'render', 'stop', 'reset'].forEach(method => ChartCapture.prototype[method] = function() {});
+        ChartCapture.defaults = RealChart.defaults;
+        ChartCapture.register = function() {};
+        ChartCapture.getChart = function() { return undefined; };
+        try {
+            appliedFilterSelections = { ...savedSelections, [key]: [] };
+            charts = {};
+            crossHighlightRendering = true;
+            window.Chart = ChartCapture;
+            renderDashboardBase();
+        } catch (error) {
+            console.warn('Falha ao montar o realce dos gráficos', error);
+        } finally {
+            window.Chart = RealChart;
+            crossHighlightRendering = false;
+            charts = savedCharts;
+            appliedFilterSelections = savedSelections;
+            filteredData = savedFiltered;
+        }
+        return captured;
+    }
+
+    function applyCapturedChartHighlights(captured) {
+        Object.entries(captured).forEach(([canvasId, config]) => {
+            const canvas = document.getElementById(canvasId);
+            const key = CHART_CROSS_FILTERS[canvasId];
+            const chartName = Object.keys(charts).find(name => charts[name]?.canvas?.id === canvasId);
+            if (!canvas || !chartName || !config?.data) return;
+            const selected = new Set(appliedFilterSelections[key] || []);
+            const labels = config.data.labels || [];
+            (config.data.datasets || []).forEach(dataset => {
+                dataset.__xfOriginalBg = dataset.backgroundColor;
+                dataset.backgroundColor = labels.map((label, index) => {
+                    const color = Array.isArray(dataset.__xfOriginalBg) ? dataset.__xfOriginalBg[index % dataset.__xfOriginalBg.length] : dataset.__xfOriginalBg;
+                    return selected.has(resolveFilterValue(key, label)) ? color : fadeChartColor(color);
+                });
+            });
+            if (config.options) config.options.animation = false;
+            charts[chartName].destroy();
+            charts[chartName] = new Chart(canvas, config);
+        });
+    }
+
+    filterAndRender = function() {
+        if (crossHighlightRendering || !fullData.length) return renderDashboardBase.apply(this, arguments);
+        const keys = [...new Set(Object.values(CHART_CROSS_FILTERS))].filter(key => (appliedFilterSelections[key] || []).length);
+        const captured = {};
+        keys.forEach(key => Object.assign(captured, captureChartsWithoutOwnFilter(key)));
+        const result = renderDashboardBase.apply(this, arguments);
+        applyCapturedChartHighlights(captured);
+        return result;
+    };
 
     if (typeof Chart !== 'undefined' && Chart.defaults) {
         const crossFilterElementsAt = (event, elements, chart) => {
