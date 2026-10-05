@@ -351,7 +351,7 @@
                     <span id="fileNameDisplay" class="text-sm font-semibold text-white">Importar Excel</span>
                     <input type="file" id="excelInput" accept=".xlsx, .xls, .csv" class="hidden">
                 </label>
-                <label class="flex gap-2 bg-white/10 backdrop-blur-sm border border-white/20 px-4 py-2.5 rounded-2xl cursor-pointer hover:bg-white/20 transition-all" title="Importar cadastro de colaboradores">
+                <label class="flex gap-2 bg-white/10 backdrop-blur-sm border border-white/20 px-4 py-2.5 rounded-2xl cursor-pointer hover:bg-white/20 transition-all" title="Importar Base.xlsx (a mesma do COP Analytics): Colaborador Responsável + setor do Operador">
                     <i data-lucide="user-check" class="text-emerald-300 w-5 h-5"></i>
                     <span id="technicianListDisplay" class="text-sm font-semibold text-white">Lista de colaboradores</span>
                     <input type="file" id="technicianListInput" accept=".xlsx, .xls, .csv" class="hidden">
@@ -1428,13 +1428,39 @@
         return { id: String(id || '').trim(), name: String(name || '').trim(), sector: String(sector || '').trim() };
     }
 
+    function findSheetByKeyword(wb, keyword) {
+        const sheetName = wb.SheetNames.find(name => normalizeText(name).includes(keyword));
+        return sheetName ? wb.Sheets[sheetName] : null;
+    }
+
+    // Base.xlsx do COP Analytics (abas Operadores, Coloborador Responsável, Eventos, Diagnósticos).
+    // As ordens trazem o Colaborador Responsável, então a lista vem dessa aba; ela não tem setor,
+    // então o setor padrão é o do Operador com o mesmo nome (os IDs das duas abas não se relacionam).
+    function extractRosterFromBaseWorkbook(wb) {
+        const responsaveisSheet = findSheetByKeyword(wb, 'RESPONS');
+        const operadoresSheet = findSheetByKeyword(wb, 'OPERADOR');
+        if (!responsaveisSheet || !operadoresSheet) return null;
+        const sectorByName = new Map();
+        XLSX.utils.sheet_to_json(operadoresSheet, { defval: '' }).forEach(row => {
+            const nameKey = normalizePersonName(getColumnValue(row, ['NOME', 'Nome']));
+            const sector = String(getColumnValue(row, ['DESCRIAAO', 'DESCRIÇÃO', 'Descrição', 'DESCRICAO', 'SETOR', 'Setor']) || '').trim();
+            if (nameKey && sector && !sectorByName.has(nameKey)) sectorByName.set(nameKey, sector);
+        });
+        return XLSX.utils.sheet_to_json(responsaveisSheet, { defval: '' })
+            .map(row => {
+                const name = String(getColumnValue(row, ['NOME', 'Nome']) || '').trim();
+                return { id: '', name, sector: sectorByName.get(normalizePersonName(name)) || '' };
+            })
+            .filter(item => item.name);
+    }
+
     async function loadTechnicianRosterBuffer(buffer, sourceName) {
         const wb = XLSX.read(buffer, { type: 'array', cellDates: true });
-        const sheet = wb.Sheets[wb.SheetNames[0]];
-        const rows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
-        const rosterRows = rows.map(extractTechnicianRosterRow).filter(item => item && (item.id || item.name));
+        const baseRoster = extractRosterFromBaseWorkbook(wb);
+        const rows = baseRoster ? [] : XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: '' });
+        const rosterRows = baseRoster || rows.map(extractTechnicianRosterRow).filter(item => item && (item.id || item.name));
         if (!rosterRows.length) {
-            alert('Não encontrei colaboradores. Use colunas como ID, NOME e SETOR/DESCRIAAO.');
+            alert('Não encontrei colaboradores. Importe a Base.xlsx do COP Analytics (abas Operadores e Colaborador Responsável) ou uma planilha com colunas ID, NOME e SETOR/DESCRIAAO.');
             return;
         }
         saveTechnicianRoster(rosterRows);
