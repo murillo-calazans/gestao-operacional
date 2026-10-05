@@ -64,6 +64,7 @@
         .checkbox-item:hover { background: #f1f5f9; }
         .xf-link { cursor: pointer; border-radius: 4px; }
         .xf-link:hover { color: #1d4ed8; text-decoration: underline; text-underline-offset: 3px; }
+        .xf-link.xf-selected { background: #fde68a; color: #78350f; box-shadow: 0 0 0 2px #fde68a; }
         .checkbox-item input { width: 16px; height: 16px; cursor: pointer; }
         .podium {
             display: flex;
@@ -405,7 +406,7 @@
                 </div>
             </div>
             <div id="activeFilterChips" class="mt-4 flex flex-wrap gap-2 items-center text-xs text-slate-400">Nenhum filtro aplicado.</div>
-            <p class="text-[11px] text-slate-400 mt-3">Dica: clique em um nome nos gráficos e tabelas para filtrar a tela inteira. Clique de novo para remover; Ctrl+clique soma mais de um valor.</p>
+            <p class="text-[11px] text-slate-400 mt-3">Dica: clique em um nome nos gráficos e tabelas para filtrar a tela inteira. Clique de novo para remover. Para escolher vários, segure Ctrl e clique em cada um; o filtro aplica quando você solta o Ctrl.</p>
         </section>
 
         <div id="analyticsContent" class="space-y-8">
@@ -1188,6 +1189,8 @@
             </div>
         </div>
     </div>
+
+    <div id="crossFilterHint" class="hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-[95] bg-amber-400 text-slate-900 rounded-full shadow-2xl px-5 py-2.5 text-xs font-black max-w-[92vw] truncate"></div>
 
     <div id="floatingFilterPill" class="hidden lg:!hidden fixed bottom-5 right-5 z-[90] bg-slate-900 text-white rounded-full shadow-2xl flex items-center gap-1 pl-4 pr-1 py-1 text-xs font-black">
         <button type="button" id="floatingFilterOpen" class="flex items-center gap-2 py-1.5"><i data-lucide="filter" class="w-3 h-3 text-amber-300"></i><span id="floatingFilterText">Filtros ativos</span></button>
@@ -4559,17 +4562,77 @@ function renderTechnicians() {
             || null;
     }
 
+    // Com Ctrl/Shift pressionado os cliques só marcam (sem redesenhar a tela, para as outras
+    // barras continuarem clicáveis); o filtro é aplicado quando a tecla é solta.
+    let pendingCrossFilter = null;
+
     function applyCrossFilter(key, rawLabel, additive) {
         const value = resolveFilterValue(key, rawLabel);
         if (!value) return;
-        const current = appliedFilterSelections[key] || [];
         if (additive) {
-            appliedFilterSelections[key] = current.includes(value) ? current.filter(item => item !== value) : [...current, value];
-        } else {
-            appliedFilterSelections[key] = current.length === 1 && current[0] === value ? [] : [value];
+            if (!pendingCrossFilter) pendingCrossFilter = {};
+            const current = pendingCrossFilter[key] || [...(appliedFilterSelections[key] || [])];
+            pendingCrossFilter[key] = current.includes(value) ? current.filter(item => item !== value) : [...current, value];
+            renderPendingCrossFilter();
+            return;
         }
+        const current = appliedFilterSelections[key] || [];
+        appliedFilterSelections[key] = current.length === 1 && current[0] === value ? [] : [value];
         filterAndRender();
     }
+
+    function commitPendingCrossFilter() {
+        if (!pendingCrossFilter) return;
+        Object.assign(appliedFilterSelections, pendingCrossFilter);
+        pendingCrossFilter = null;
+        document.getElementById('crossFilterHint')?.classList.add('hidden');
+        filterAndRender();
+    }
+
+    function fadeChartColor(color) {
+        if (typeof color !== 'string') return 'rgba(148, 163, 184, 0.35)';
+        if (/^#[0-9a-f]{6}$/i.test(color)) return color + '40';
+        if (/^#[0-9a-f]{3}$/i.test(color)) return color.replace(/^#(.)(.)(.)$/, '#$1$1$2$2$3$3') + '40';
+        if (color.startsWith('rgb')) {
+            const parts = color.match(/[\d.]+/g) || [];
+            return parts.length >= 3 ? `rgba(${parts[0]}, ${parts[1]}, ${parts[2]}, 0.25)` : 'rgba(148, 163, 184, 0.35)';
+        }
+        return 'rgba(148, 163, 184, 0.35)';
+    }
+
+    function renderPendingCrossFilter() {
+        if (!pendingCrossFilter) return;
+        Object.values(charts).forEach(chart => {
+            const key = CHART_CROSS_FILTERS[chart?.canvas?.id];
+            if (!key || !pendingCrossFilter[key]) return;
+            const selected = new Set(pendingCrossFilter[key]);
+            const labels = chart.data.labels || [];
+            chart.data.datasets.forEach(dataset => {
+                if (dataset.__xfOriginalBg === undefined) dataset.__xfOriginalBg = dataset.backgroundColor;
+                const base = dataset.__xfOriginalBg;
+                dataset.backgroundColor = labels.map((label, index) => {
+                    const color = Array.isArray(base) ? base[index % base.length] : base;
+                    return selected.has(resolveFilterValue(key, label)) ? color : fadeChartColor(color);
+                });
+            });
+            chart.update('none');
+        });
+        document.querySelectorAll('.xf-link').forEach(link => {
+            const selected = pendingCrossFilter[link.dataset.xfKey];
+            link.classList.toggle('xf-selected', !!selected && selected.includes(link.dataset.xfValue));
+        });
+        const hint = document.getElementById('crossFilterHint');
+        if (hint) {
+            const parts = Object.entries(pendingCrossFilter).map(([key, values]) => `${FILTER_FIELD_LABELS[key] || key}: ${values.length} selecionado(s)`);
+            hint.innerText = `${parts.join(' · ')} — solte o Ctrl para aplicar`;
+            hint.classList.remove('hidden');
+        }
+    }
+
+    window.addEventListener('keyup', (event) => {
+        if (!event.ctrlKey && !event.metaKey && !event.shiftKey) commitPendingCrossFilter();
+    });
+    window.addEventListener('blur', commitPendingCrossFilter);
 
     if (typeof Chart !== 'undefined' && Chart.defaults) {
         const crossFilterElementsAt = (event, elements, chart) => {
